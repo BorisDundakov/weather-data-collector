@@ -1,0 +1,13 @@
+# Headless service for StatefulSet to enable direct pod-to-pod communication
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-headless-service
+  namespace: weather-data-collector
+spec:
+  clusterIP: None # This makes the service headless
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo-db

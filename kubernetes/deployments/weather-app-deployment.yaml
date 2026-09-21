@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app-deployment
+  labels:
+    app: weather-app
+    namespace: weather-data-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-app
+      namespace: weather-data-collector
+
+  # template defines the configuration of the pods that will be created by this deployment
+  template:
+    metadata:
+      labels:
+        app: weather-app
+        namespace: weather-data-collector
+    spec:
+      containers:
+      - name: weather-ui-container-app
+        image: borisdundakov/weather-data-collector:2.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - secretRef:
+            name: weather-secrets
+
+        - secretRef:
+            name: mongo-secrets
+        - configMapRef:
+            name: mongo-config

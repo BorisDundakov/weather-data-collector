@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mongo-local-storage
+
+# Kubernetes will NOT dynamically create PVs.
+# We are creating the PV manually.
+provisioner: kubernetes.io/no-provisioner # a local storage class does not have a provisioner, as it uses existing storage on the node
+volumeBindingMode: WaitForFirstConsumer # This ensures that the PV is only bound to a node when a pod is scheduled

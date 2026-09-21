@@ -2,3 +2,5 @@
 .env
 __pycache__/
 *.pyc
+kubernetes/secrets/weather-secret.yaml
+kubernetes/secrets/mongo-secret.yaml
