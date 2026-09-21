@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: mongo-statefulset
+  namespace: weather-data-collector
+  labels:
+    app: mongo-db
+
+spec:
+  serviceName: mongo-headless-service
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mongo-db
+
+  template:
+    metadata:
+      labels:
+        app: mongo-db
+
+    spec:
+      volumes:
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+            # References the existing PVC defined in mongo-pvc.yaml.
+            # TLDR: Create a Pod volume called 'mongo-persistent-storage',
+            # backed by the PVC 'mongo-pvc'.
+
+      containers:
+        - name: mongo-container
+          image: mongo:7
+
+          ports:
+            - containerPort: 27017
+
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+              # MongoDB uses /data/db as its default data directory.
+              # TLDR: Mount the Pod volume 'mongo-persistent-storage'
+              # at /data/db inside this container.
+          
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_USERNAME
+                  optional: false
+
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_PASSWORD
+                  optional: false
